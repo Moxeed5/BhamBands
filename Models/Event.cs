@@ -1,14 +1,19 @@
 ﻿namespace BhamBands.Models
 {
-    public class Event
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        // ... other properties ...
-
-        // Navigation properties
-        public Venue Venue { get; set; }
-        public List<TicketPrice> TicketPrices { get; set; }
-    }
+        public class Event
+        {
+            public string name { get; set; }
+            public string type { get; set; }
+            public string id { get; set; }
+            public bool test { get; set; }
+            public string url { get; set; }
+            public string locale { get; set; }
+            public IList<Image> images { get; set; }
+            
+            public Dates dates { get; set; }
+            
+            
+            public Embedded _embedded { get; set; }
+        }
 
 }
