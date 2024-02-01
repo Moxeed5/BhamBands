@@ -1,4 +1,7 @@
-﻿namespace BhamBands.Models
+﻿using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using System.Diagnostics.Metrics;
+
+namespace BhamBands.Models
 {
     public class Venue
     {
@@ -16,5 +19,4 @@
         public Location location { get; set; }
         
     }
-
 }
