@@ -2,6 +2,8 @@
 {
     public class Address
     {
-        public string line1 { get; set; }
+        public int Id { get; set; } // Primary key
+        public string Line1 { get; set; }
     }
 }
+
