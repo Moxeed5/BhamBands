@@ -1,10 +1,13 @@
 using BhamBands.Data;
+using BhamBands.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient<TicketmasterService>();
+
 
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");
 
