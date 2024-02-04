@@ -7,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient<TicketmasterService>();
+builder.Services.AddLogging();
+// In Program.cs
+builder.Services.AddHttpClient<TicketmasterService>(); // Register TicketmasterService
+
 
 
 var connectionString = builder.Configuration.GetConnectionString("MySqlConnection");

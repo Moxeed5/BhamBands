@@ -1,21 +1,28 @@
 ﻿using BhamBands.Models;
+using BhamBands.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging; // Make sure you have this using directive for ILogger
 using System.Diagnostics;
+using System.Threading.Tasks; // Required for async Task
 
 namespace BhamBands.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly TicketmasterService _ticketmasterService; // Dependency
 
-        public HomeController(ILogger<HomeController> logger)
+        // Consolidated constructor
+        public HomeController(ILogger<HomeController> logger, TicketmasterService ticketmasterService)
         {
             _logger = logger;
+            _ticketmasterService = ticketmasterService; // Initialize the service
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var events = await _ticketmasterService.GetEventsAsync(); // Fetch events asynchronously
+            return View(events); // Pass the events to the Index view
         }
 
         public IActionResult Privacy()
