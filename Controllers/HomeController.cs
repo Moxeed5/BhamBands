@@ -19,11 +19,30 @@ namespace BhamBands.Controllers
             _ticketmasterService = ticketmasterService; // Initialize the service
         }
 
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    var events = await _ticketmasterService.GetEventsAsync(); // Fetch events asynchronously
+        //    return View(events); // Pass the events to the Index view
+        //}
+
+        public async Task<IActionResult> Index(int page = 1)
         {
-            var events = await _ticketmasterService.GetEventsAsync(); // Fetch events asynchronously
-            return View(events); // Pass the events to the Index view
+            var fetchResult = await _ticketmasterService.GetEventsAsync(page);
+            ViewBag.CurrentPage = page;
+
+            // Assuming EventViewModel is correctly expecting a list of events and a next page URL.
+            // If EventViewModel is your model for the view, make sure it matches what the view expects.
+            var viewModel = new EventViewModel
+            {
+                Events = fetchResult.Events,
+                NextPageUrl = fetchResult.NextPageUrl
+            };
+
+            return View(viewModel);
         }
+
+
+
 
         public IActionResult Privacy()
         {

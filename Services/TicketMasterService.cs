@@ -10,7 +10,6 @@ namespace BhamBands.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey = "i0dHdnIp8pzV4QTRsvAOyVEARhM79nA2";
-        // Base URL adjusted to not include the API key
         private readonly string _baseApiUrl = "https://app.ticketmaster.com/discovery/v2/events";
 
         public TicketmasterService(HttpClient httpClient)
@@ -18,27 +17,51 @@ namespace BhamBands.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<Event>> GetEventsAsync(string city = "Birmingham", string countryCode = "US", string stateCode = "AL")
+        public async Task<EventFetchResult> GetEventsAsync(int page = 1, string city = "Birmingham", string countryCode = "US", string stateCode = "AL")
         {
-            var eventsList = new List<Event>();
-            // Construct the request URL with the API key and parameters at the time of making the request
-            var url = $"{_baseApiUrl}?apikey={_apiKey}&locale=*&city={city}&countryCode={countryCode}&stateCode={stateCode}";
+            List<Event> allEvents = new List<Event>();
+            string pageParam = page > 1 ? $"&page={page - 1}" : "";
+            string url = $"{_baseApiUrl}?apikey={_apiKey}{pageParam}&size=20&locale=*&city={Uri.EscapeDataString(city)}&countryCode={countryCode}&stateCode={stateCode}";
 
+            string nextPageUrl = null;
 
-            var response = await _httpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
+            while (!string.IsNullOrEmpty(url))
             {
-                var content = await response.Content.ReadAsStringAsync();
-                eventsList = DeserializeAndMapToEvents(content);
-            }
-            else
-            {
-                // Handle errors or unsuccessful status codes accordingly
-                throw new HttpRequestException($"Error fetching events: {response.StatusCode}");
+                var response = await _httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var apiResponse = JsonSerializer.Deserialize<ApiResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    if (apiResponse != null && apiResponse.Embedded?.events != null)
+                    {
+                        allEvents.AddRange(apiResponse.Embedded.events);
+                        // Update nextUrl for the next iteration based on the 'next' link.
+                        // This will be null or omitted when there are no more pages, ending the loop.
+                        url = apiResponse.links?.next?.href;
+                    }
+                    else
+                    {
+                        // If the response doesn't contain the expected data, end the loop.
+                        url = null;
+                    }
+                }
+                else
+                {
+                    // Log or handle errors as appropriate for your application
+                    throw new HttpRequestException($"API call failed with status code: {response.StatusCode}");
+                    // Optionally, you might want to break out of the loop instead of throwing an exception.
+                }
             }
 
-            return eventsList;
+
+            return new EventFetchResult
+            {
+                Events = allEvents,
+                NextPageUrl = nextPageUrl
+            };
         }
+
 
         private List<Event> DeserializeAndMapToEvents(string jsonResponse)
         {

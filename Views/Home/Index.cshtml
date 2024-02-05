@@ -1,12 +1,26 @@
-﻿@model IEnumerable<Event> // Change this to match the actual model returned by GetEventsAsync
+﻿@model EventViewModel
 
-<h2>Events</h2>
-
-@foreach (var eventItem in Model)
+@foreach (var eventItem in Model.Events)
 {
     <div>
-        <h3>@Html.DisplayFor(modelItem => eventItem.name)</h3>
-        <!-- Display other properties as needed -->
+        <h2>@eventItem.name</h2>
+        <!-- Removed venue and attraction details for simplicity -->
     </div>
 }
+<div>
+    @if (ViewBag.CurrentPage > 1)
+    {
+        <a href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })">Previous Page</a>
+    }
+
+    <a href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })">Next Page</a>
+</div>
+
+
+
+@if (!string.IsNullOrEmpty(Model.NextPageUrl))
+{
+    <a href="@Model.NextPageUrl">Next Page</a>
+}
+
 

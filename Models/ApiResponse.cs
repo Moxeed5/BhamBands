@@ -6,5 +6,6 @@ namespace BhamBands.Models
     {
         [JsonPropertyName("_embedded")]
         public Embedded Embedded { get; set; }
+        public Links links { get; set; }
     }
 }

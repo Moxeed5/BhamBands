@@ -15,5 +15,8 @@ namespace BhamBands.Models
         public Dates dates { get; set; }
         
         public Embedded _embedded { get; set; }
+
+        public IList<Venue> Venues { get; set; }
+        public IList<Attraction> Attractions { get; set; }
     }
 }
